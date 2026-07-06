@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Relatorio Financeiro</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #edf2f7;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #152033;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        .shell {
+            width: 100%;
+            background-color: #edf2f7;
+            padding: 24px 12px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 980px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #d8e1ec;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(180deg, #17324d 0%, #1f4b73 100%);
+            border-bottom: 1px solid #dbe3ee;
+            padding: 26px 32px;
+            color: #ffffff;
+        }
+
+        .header-grid {
+            width: 100%;
+        }
+
+        .header-left {
+            width: 62%;
+            vertical-align: top;
+            padding-right: 18px;
+        }
+
+        .header-right {
+            width: 38%;
+            vertical-align: top;
+        }
+
+        .eyebrow {
+            margin: 0 0 10px;
+            font-size: 11px;
+            line-height: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: #c7d6e5;
+        }
+
+        .title {
+            margin: 0;
+            font-size: 28px;
+            line-height: 34px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            margin: 10px 0 0;
+            font-size: 14px;
+            line-height: 22px;
+            color: #d8e3ee;
+        }
+
+        .header-panel {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 10px;
+            padding: 16px 18px;
+        }
+
+        .panel-label {
+            margin: 0;
+            font-size: 11px;
+            line-height: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #b9ccdd;
+            font-weight: 700;
+        }
+
+        .panel-value {
+            margin: 6px 0 0;
+            font-size: 18px;
+            line-height: 26px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .panel-meta {
+            margin: 10px 0 0;
+            font-size: 13px;
+            line-height: 20px;
+            color: #d8e3ee;
+        }
+
+        .body {
+            padding: 24px;
+        }
+
+        .row {
+            width: 100%;
+            margin-bottom: 18px;
+        }
+
+        .col-left {
+            width: 56%;
+            vertical-align: top;
+            padding-right: 10px;
+        }
+
+        .col-right {
+            width: 44%;
+            vertical-align: top;
+            padding-left: 10px;
+        }
+
+        .surface {
+            background-color: #f8fafc;
+            border: 1px solid #dbe3ee;
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .section-title {
+            margin: 0 0 14px;
+            font-size: 15px;
+            line-height: 22px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .metrics {
+            width: 100%;
+        }
+
+        .metric-box {
+            width: 50%;
+            vertical-align: top;
+            padding: 6px;
+        }
+
+        .metric-card {
+            background-color: #ffffff;
+            border: 1px solid #dbe3ee;
+            border-radius: 12px;
+            padding: 16px;
+            height: 100%;
+        }
+
+        .metric-label {
+            margin: 0 0 8px;
+            font-size: 11px;
+            line-height: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+            color: #64748b;
+        }
+
+        .metric-value {
+            margin: 0;
+            font-size: 24px;
+            line-height: 30px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .metric-copy {
+            margin: 8px 0 0;
+            font-size: 13px;
+            line-height: 20px;
+            color: #475569;
+        }
+
+        .amount-positive {
+            color: #15803d;
+        }
+
+        .amount-negative {
+            color: #b91c1c;
+        }
+
+        .chart-table {
+            width: 100%;
+        }
+
+        .chart-row td {
+            padding: 8px 0;
+            vertical-align: middle;
+        }
+
+        .chart-label {
+            width: 110px;
+            padding-right: 12px;
+            font-size: 12px;
+            line-height: 18px;
+            font-weight: 700;
+            color: #334155;
+            white-space: nowrap;
+        }
+
+        .chart-track-cell {
+            width: 100%;
+        }
+
+        .chart-track {
+            width: 100%;
+            height: 14px;
+            background-color: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .chart-bar {
+            height: 14px;
+            border-radius: 999px;
+        }
+
+        .bar-income {
+            background-color: #22c55e;
+        }
+
+        .bar-expense {
+            background-color: #ef4444;
+        }
+
+        .bar-opening {
+            background-color: #3b82f6;
+        }
+
+        .bar-balance {
+            background-color: #8b5cf6;
+        }
+
+        .bar-category-positive {
+            background-color: #16a34a;
+        }
+
+        .bar-category-negative {
+            background-color: #dc2626;
+        }
+
+        .chart-value {
+            width: 126px;
+            padding-left: 12px;
+            text-align: right;
+            font-size: 12px;
+            line-height: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            white-space: nowrap;
+        }
+
+        .insight {
+            margin-top: 14px;
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+
+        .insight-label {
+            margin: 0;
+            font-size: 11px;
+            line-height: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+            color: #1d4ed8;
+        }
+
+        .insight-value {
+            margin: 6px 0 0;
+            font-size: 18px;
+            line-height: 26px;
+            font-weight: 700;
+        }
+
+        .insight-copy {
+            margin: 6px 0 0;
+            font-size: 13px;
+            line-height: 20px;
+            color: #334155;
+        }
+
+        .category-table {
+            width: 100%;
+        }
+
+        .category-head th {
+            padding: 0 0 10px;
+            text-align: left;
+            font-size: 11px;
+            line-height: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #64748b;
+        }
+
+        .category-head th:last-child {
+            text-align: right;
+        }
+
+        .category-row td {
+            padding: 10px 0;
+            border-top: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .category-name {
+            width: 190px;
+            padding-right: 12px;
+            font-size: 13px;
+            line-height: 20px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .category-bar-cell {
+            width: 100%;
+            padding-right: 12px;
+        }
+
+        .category-value {
+            width: 140px;
+            text-align: right;
+            font-size: 13px;
+            line-height: 20px;
+            font-weight: 700;
+            color: #0f172a;
+            white-space: nowrap;
+        }
+
+        .empty {
+            background-color: #ffffff;
+            border: 1px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            font-size: 13px;
+            line-height: 20px;
+            color: #64748b;
+        }
+
+        .footer {
+            padding: 0 24px 24px;
+            font-size: 12px;
+            line-height: 18px;
+            color: #64748b;
+        }
+
+        @media screen and (max-width: 720px) {
+            .shell {
+                padding: 12px 6px;
+            }
+
+            .header,
+            .body,
+            .footer {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .header-left,
+            .header-right,
+            .col-left,
+            .col-right,
+            .metric-box {
+                display: block;
+                width: 100%;
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .header-right,
+            .col-right {
+                padding-top: 12px;
+            }
+
+            .title {
+                font-size: 24px;
+                line-height: 30px;
+            }
+
+            .chart-label,
+            .chart-value,
+            .category-name,
+            .category-value {
+                width: auto;
+                white-space: normal;
+            }
+
+            .chart-row td,
+            .category-row td {
+                display: block;
+                width: 100%;
+                text-align: left;
+                padding-right: 0;
+                padding-left: 0;
+            }
+
+            .chart-value,
+            .category-value {
+                text-align: left;
+                padding-top: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+<th:block th:with="
+    incomeVal=${totalIncome != null ? totalIncome.doubleValue() : 0.0},
+    expenseVal=${totalExpense != null ? totalExpense.doubleValue() : 0.0},
+    openingVal=${openingBalance != null ? T(java.lang.Math).abs(openingBalance.doubleValue()) : 0.0},
+    balanceVal=${balance != null ? T(java.lang.Math).abs(balance.doubleValue()) : 0.0},
+    netFlow=${(totalIncome != null ? totalIncome.doubleValue() : 0.0) - (totalExpense != null ? totalExpense.doubleValue() : 0.0)},
+    chartMax=${T(java.lang.Math).max(T(java.lang.Math).max(totalIncome != null ? totalIncome.doubleValue() : 0.0, totalExpense != null ? totalExpense.doubleValue() : 0.0), T(java.lang.Math).max(openingBalance != null ? T(java.lang.Math).abs(openingBalance.doubleValue()) : 0.0, balance != null ? T(java.lang.Math).abs(balance.doubleValue()) : 0.0))},
+    categoryScale=${T(java.lang.Math).max(totalIncome != null ? totalIncome.doubleValue() : 0.0, totalExpense != null ? totalExpense.doubleValue() : 0.0)}
+">
+    <table role="presentation" width="100%" class="shell">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" class="card">
+                    <tr>
+                        <td class="header">
+                            <table role="presentation" class="header-grid">
+                                <tr>
+                                    <td class="header-left">
+                                        <p class="eyebrow">Relatorio financeiro</p>
+                                        <h1 class="title">Consolidado de movimentacoes do periodo</h1>
+                                        <p class="subtitle">
+                                            Demonstrativo com saldos, entradas, saidas e distribuicao por categoria no intervalo informado.
+                                        </p>
+                                    </td>
+                                    <td class="header-right">
+                                        <div class="header-panel">
+                                            <p class="panel-label">Periodo</p>
+                                            <p class="panel-value">
+                                                <span th:text="${initialDate != null ? #temporals.format(initialDate, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2026 08:00</span>
+                                                <br>
+                                                <span th:text="${finalDate != null ? #temporals.format(finalDate, 'dd/MM/yyyy HH:mm') : '-'}">31/01/2026 18:00</span>
+                                            </p>
+                                            <p class="panel-meta">
+                                                <strong th:text="${totalTransactions != null ? totalTransactions : 0}">0</strong>
+                                                transacoes processadas
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="body">
+                            <table role="presentation" class="row">
+                                <tr>
+                                    <td class="col-left">
+                                        <div class="surface">
+                                            <p class="section-title">Resumo executivo</p>
+                                            <table role="presentation" class="metrics">
+                                                <tr>
+                                                    <td class="metric-box">
+                                                        <div class="metric-card">
+                                                            <p class="metric-label">Receitas</p>
+                                                            <p class="metric-value amount-positive"
+                                                               th:text="${totalIncome != null ? 'R$ ' + #numbers.formatDecimal(totalIncome, 1, 'POINT', 2, 'COMMA') : 'R$ 0,00'}">R$ 0,00</p>
+                                                            <p class="metric-copy">Entradas acumuladas no periodo.</p>
+                                                        </div>
+                                                    </td>
+                                                    <td class="metric-box">
+                                                        <div class="metric-card">
+                                                            <p class="metric-label">Despesas</p>
+                                                            <p class="metric-value amount-negative"
+                                                               th:text="${totalExpense != null ? 'R$ ' + #numbers.formatDecimal(totalExpense, 1, 'POINT', 2, 'COMMA') : 'R$ 0,00'}">R$ 0,00</p>
+                                                            <p class="metric-copy">Saidas acumuladas no periodo.</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="metric-box">
+                                                        <div class="metric-card">
+                                                            <p class="metric-label">Saldo inicial</p>
+                                                            <p class="metric-value"
+                                                               th:text="${openingBalance != null ? 'R$ ' + #numbers.formatDecimal(openingBalance, 1, 'POINT', 2, 'COMMA') : 'R$ 0,00'}">R$ 0,00</p>
+                                                            <p class="metric-copy">Base de abertura do relatorio.</p>
+                                                        </div>
+                                                    </td>
+                                                    <td class="metric-box">
+                                                        <div class="metric-card">
+                                                            <p class="metric-label">Saldo final</p>
+                                                            <p class="metric-value"
+                                                               th:classappend="${balance != null and balance.signum() < 0} ? ' amount-negative' : ' amount-positive'"
+                                                               th:text="${balance != null ? 'R$ ' + #numbers.formatDecimal(balance, 1, 'POINT', 2, 'COMMA') : 'R$ 0,00'}">R$ 0,00</p>
+                                                            <p class="metric-copy">Posicao consolidada ao fim do intervalo.</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </td>
+                                    <td class="col-right">
+                                        <div class="surface">
+                                            <p class="section-title">Comparativo visual</p>
+                                            <table role="presentation" class="chart-table">
+                                                <tr class="chart-row">
+                                                    <td class="chart-label">Receitas</td>
+                                                    <td class="chart-track-cell">
+                                                        <div class="chart-track">
+                                                            <div class="chart-bar bar-income"
+                                                                 th:style="|width:${chartMax > 0 ? (incomeVal * 100.0 / chartMax) : 0}%;|"></div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="chart-value"
+                                                        th:text="${totalIncome != null ? 'R$ ' + #numbers.formatDecimal(totalIncome, 1, 'POINT', 2, 'COMMA') : 'R$ 0,00'}">R$ 0,00</td>
+                                                </tr>
+                                                <tr class="chart-row">
+                                                    <td class="chart-label">Despesas</td>
+                                                    <td class="chart-track-cell">
+                                                        <div class="chart-track">
+                                                            <div class="chart-bar bar-expense"
+                                                                 th:style="|width:${chartMax > 0 ? (expenseVal * 100.0 / chartMax) : 0}%;|"></div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="chart-value"
+                                                        th:text="${totalExpense != null ? 'R$ ' + #numbers.formatDecimal(totalExpense, 1, 'POINT', 2, 'COMMA') : 'R$ 0,00'}">R$ 0,00</td>
+                                                </tr>
+                                                <tr class="chart-row">
+                                                    <td class="chart-label">Saldo inicial</td>
+                                                    <td class="chart-track-cell">
+                                                        <div class="chart-track">
+                                                            <div class="chart-bar bar-opening"
+                                                                 th:style="|width:${chartMax > 0 ? (openingVal * 100.0 / chartMax) : 0}%;|"></div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="chart-value"
+                                                        th:text="${openingBalance != null ? 'R$ ' + #numbers.formatDecimal(openingBalance, 1, 'POINT', 2, 'COMMA') : 'R$ 0,00'}">R$ 0,00</td>
+                                                </tr>
+                                                <tr class="chart-row">
+                                                    <td class="chart-label">Saldo final</td>
+                                                    <td class="chart-track-cell">
+                                                        <div class="chart-track">
+                                                            <div class="chart-bar bar-balance"
+                                                                 th:style="|width:${chartMax > 0 ? (balanceVal * 100.0 / chartMax) : 0}%;|"></div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="chart-value"
+                                                        th:text="${balance != null ? 'R$ ' + #numbers.formatDecimal(balance, 1, 'POINT', 2, 'COMMA') : 'R$ 0,00'}">R$ 0,00</td>
+                                                </tr>
+                                            </table>
+
+                                            <div class="insight">
+                                                <p class="insight-label">Fluxo liquido</p>
+                                                <p class="insight-value"
+                                                   th:classappend="${netFlow < 0} ? ' amount-negative' : ' amount-positive'"
+                                                   th:text="${'R$ ' + #numbers.formatDecimal(netFlow, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</p>
+                                                <p class="insight-copy">
+                                                    Diferenca entre receitas e despesas dentro do periodo selecionado.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div class="surface">
+                                <p class="section-title">Distribuicao por categoria</p>
+
+                                <table role="presentation" class="category-table" th:if="${categories != null and !#lists.isEmpty(categories)}">
+                                    <thead class="category-head">
+                                    <tr>
+                                        <th>Categoria</th>
+                                        <th></th>
+                                        <th>Total</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr class="category-row"
+                                        th:each="category : ${categories}"
+                                        th:with="categoryWidth=${category.total != null ? (categoryScale > 0 ? (T(java.lang.Math).abs(category.total.doubleValue()) * 100.0 / categoryScale) : 0) : 0}">
+                                        <td class="category-name" th:text="${category.name != null ? category.name : '-'}">Moradia</td>
+                                        <td class="category-bar-cell">
+                                            <div class="chart-track">
+                                                <div class="chart-bar"
+                                                     th:classappend="${category.total != null and category.total.signum() < 0} ? ' bar-category-negative' : ' bar-category-positive'"
+                                                     th:style="|width:${categoryWidth}%;|"></div>
+                                            </div>
+                                        </td>
+                                        <td class="category-value"
+                                            th:text="${category.total != null ? 'R$ ' + #numbers.formatDecimal(category.total, 1, 'POINT', 2, 'COMMA') : 'R$ 0,00'}">R$ 0,00</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
+                                <div class="empty" th:if="${categories == null or #lists.isEmpty(categories)}">
+                                    Nenhuma categoria foi encontrada para o periodo selecionado.
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="footer">
+                            Email gerado automaticamente pelo servico de notificacoes.
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</th:block>
+</body>
+</html>
